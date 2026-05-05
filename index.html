@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikSave TikTok Video Downloader - No Watermark | Full HD</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        }
+        
+        .tiktok-gradient {
+            background: linear-gradient(135deg, #00f2ea 0%, #ff0050 100%);
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .video-card {
+            transition: all 0.3s ease;
+        }
+        
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #00f2ea 0%, #ff0050 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .download-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 242, 234, 0.4);
+        }
+        
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #00f2ea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .input-glow:focus {
+            box-shadow: 0 0 20px rgba(0, 242, 234, 0.5);
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, rgba(0, 242, 234, 0.1) 0%, rgba(255, 0, 80, 0.1) 100%);
+        }
+        
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <!-- Header -->
+    <header class="py-6 px-4">
+        <nav class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 tiktok-gradient rounded-xl flex items-center justify-center">
+                    <i class="fas fa-video text-white text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-white font-bold text-xl">TikSave Tiktok Video Downloader</h1>
+                    <p class="text-white/70 text-sm">No Watermark • Full HD</p>
+                </div>
+            </div>
+            <a href="#how-it-works" class="text-white/80 hover:text-white transition-colors">
+                <i class="fas fa-info-circle mr-2"></i>How it Works
+            </a>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="px-4 py-12">
+        <div class="max-w-4xl mx-auto">
+            <!-- Hero Section -->
+            <div class="text-center mb-12">
+                <h2 class="text-white text-4xl md:text-5xl font-bold mb-4">
+                    Download TikTok Videos
+                    <span class="block text-2xl md:text-3xl mt-2">Without Watermark</span>
+                </h2>
+                <p class="text-white/80 text-lg max-w-2xl mx-auto">
+                    Get high-quality TikTok videos in Full HD without any watermarks. 
+                    Free, fast, and unlimited downloads.
+                </p>
+            </div>
+
+            <!-- Input Section -->
+            <div class="glass-effect rounded-3xl p-8 mb-8">
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-1 relative">
+                        <div class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <input 
+                            type="text" 
+                            id="tiktokUrl"
+                            placeholder="Paste TikTok video URL here..."
+                            class="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-gray-200 focus:border-pink-500 input-glow outline-none text-lg transition-all"
+                        >
+                    </div>
+                    <button 
+                        id="fetchBtn"
+                        onclick="fetchVideo()"
+                        class="download-btn px-8 py-4 rounded-2xl text-white font-semibold text-lg flex items-center justify-center gap-3"
+                    >
+                        <i class="fas fa-download"></i>
+                        <span>Download</span>
+                    </button>
+                </div>
+                
+                <!-- Quick Examples -->
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <span class="text-gray-500 text-sm">Example URLs:</span>
+                    <button onclick="setExampleUrl('https://www.tiktok.com/@username/video/1234567890123456789')" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-colors">
+                        Full URL
+                    </button>
+                    <button onclick="setExampleUrl('https://vm.tiktok.com/ABC123/')" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-colors">
+                        Short URL
+                    </button>
+                    <button onclick="setExampleUrl('https://vt.tiktok.com/XYZ789/')" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-colors">
+                        Short Link
+                    </button>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loading" class="hidden mt-6 flex flex-col items-center">
+                    <div class="loading-spinner mb-4"></div>
+                    <p class="text-gray-600">Fetching video information...</p>
+                    <p class="text-gray-400 text-sm mt-2">This may take a few seconds</p>
+                </div>
+
+                <!-- Error Message -->
+                <div id="error" class="hidden mt-6 bg-red-50 border border-red-200 rounded-xl p-4">
+                    <div class="flex items-start gap-3 text-red-600">
+                        <i class="fas fa-exclamation-circle mt-0.5"></i>
+                        <div>
+                            <p class="font-semibold">Unable to fetch video</p>
+                            <p id="errorMessage" class="text-sm mt-1">Please check the URL and try again.</p>
+                            <p class="text-xs mt-2 text-gray-500">Tips: Make sure the video is public and the link is correct.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video Result Card -->
+            <div id="resultCard" class="hidden">
+                <div class="glass-effect rounded-3xl overflow-hidden video-card">
+                    <div class="md:flex">
+                        <!-- Video Thumbnail -->
+                        <div class="md:w-1/3 bg-gray-900 relative">
+                            <img 
+                                id="videoThumb"
+                                src="" 
+                                alt="Video thumbnail"
+                                class="w-full h-full object-cover min-h-[300px]"
+                            >
+                            <div class="absolute bottom-4 left-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
+                                <i class="fas fa-clock mr-1"></i>
+                                <span id="videoDuration">0:00</span>
+                            </div>
+                            <div class="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                                <i class="fas fa-check mr-1"></i>HD Ready
+                            </div>
+                        </div>
+
+                        <!-- Video Info -->
+                        <div class="md:w-2/3 p-6">
+                            <div class="flex items-start gap-4 mb-4">
+                                <img 
+                                    id="authorAvatar"
+                                    src="" 
+                                    alt="Author avatar"
+                                    class="w-14 h-14 rounded-full border-2 border-pink-500"
+                                >
+                                <div class="flex-1">
+                                    <h3 id="authorName" class="font-bold text-lg"></h3>
+                                    <p id="authorUsername" class="text-gray-500 text-sm"></p>
+                                </div>
+                            </div>
+
+                            <p id="videoTitle" class="text-gray-700 mb-6 line-clamp-3"></p>
+
+                            <!-- Stats -->
+                            <div class="grid grid-cols-3 gap-4 mb-6">
+                                <div class="stats-card rounded-xl p-4 text-center">
+                                    <i class="fas fa-eye text-pink-500 text-xl mb-2"></i>
+                                    <p id="viewCount" class="font-bold text-lg">0</p>
+                                    <p class="text-gray-500 text-xs">Views</p>
+                                </div>
+                                <div class="stats-card rounded-xl p-4 text-center">
+                                    <i class="fas fa-heart text-red-500 text-xl mb-2"></i>
+                                    <p id="likeCount" class="font-bold text-lg">0</p>
+                                    <p class="text-gray-500 text-xs">Likes</p>
+                                </div>
+                                <div class="stats-card rounded-xl p-4 text-center">
+                                    <i class="fas fa-share text-cyan-500 text-xl mb-2"></i>
+                                    <p id="shareCount" class="font-bold text-lg">0</p>
+                                    <p class="text-gray-500 text-xs">Shares</p>
+                                </div>
+                            </div>
+
+                            <!-- Download Buttons -->
+                            <div class="flex flex-wrap gap-3">
+                                <button 
+                                    onclick="downloadVideo('nowatermark')"
+                                    class="download-btn flex-1 min-w-[150px] py-3 px-6 rounded-xl text-white font-semibold text-center flex items-center justify-center gap-2"
+                                >
+                                    <i class="fas fa-ban"></i>
+                                    <span>No Watermark</span>
+                                </button>
+                                <button 
+                                    onclick="downloadVideo('watermark')"
+                                    class="tiktok-gradient flex-1 min-w-[150px] py-3 px-6 rounded-xl text-white font-semibold flex items-center justify-center gap-2"
+                                >
+                                    <i class="fas fa-video"></i>
+                                    <span>With Logo</span>
+                                </button>
+                                <button 
+                                    onclick="downloadAudio()"
+                                    class="bg-gray-100 hover:bg-gray-200 py-3 px-6 rounded-xl text-gray-700 font-semibold flex items-center justify-center gap-2 transition-colors"
+                                >
+                                    <i class="fas fa-music"></i>
+                                    <span>Audio MP3</span>
+                                </button>
+                            </div>
+
+                            <!-- Direct Download Link -->
+                            <div class="mt-4 p-4 bg-blue-50 rounded-xl">
+                                <p class="text-blue-800 text-sm font-medium mb-2">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    Download Instructions:
+                                </p>
+                                <ol class="text-blue-700 text-xs space-y-1">
+                                    <li>1. Click "No Watermark" or "With Logo" button</li>
+                                    <li>2. Video will open in a new tab</li>
+                                    <li>3. Right-click on video and select "Save Video As..."</li>
+                                    <li>4. Choose location and save!</li>
+                                </ol>
+                            </div>
+                              
+                            <!-- Source Code Download -->
+                           <!--
+                            <div class="mt-6 pt-6 border-t border-gray-200">
+                                <p class="text-gray-600 text-sm mb-3">
+                                    <i class="fas fa-code mr-1"></i>
+                                    Want to use this tool on your website?
+                                </p>
+                                <button 
+                                    onclick="downloadSourceCode()"
+                                    class="bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 px-4 rounded-lg text-sm font-medium flex items-center gap-2 hover:opacity-90 transition-opacity"
+                                >
+                                    <i class="fas fa-file-code"></i>
+                                    Download Source Code (HTML)
+                                </button>
+                            </div> 
+                            -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="grid md:grid-cols-3 gap-6 mt-12">
+                <div class="glass-effect rounded-2xl p-6 text-center">
+                    <div class="w-16 h-16 tiktok-gradient rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-ban text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">No Watermark</h3>
+                    <p class="text-gray-600">Download clean videos without any TikTok branding or watermarks.</p>
+                </div>
+                <div class="glass-effect rounded-2xl p-6 text-center">
+                    <div class="w-16 h-16 tiktok-gradient rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-video text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">Full HD Quality</h3>
+                    <p class="text-gray-600">Get the highest quality video available in original resolution.</p>
+                </div>
+                <div class="glass-effect rounded-2xl p-6 text-center">
+                    <div class="w-16 h-16 tiktok-gradient rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-infinity text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">Unlimited Free</h3>
+                    <p class="text-gray-600">No limits, no registration required. Download as many as you want.</p>
+                </div>
+            </div>
+
+            <!-- How It Works -->
+            <div id="how-it-works" class="mt-16 glass-effect rounded-3xl p-8">
+                <h3 class="text-2xl font-bold text-center mb-8">How It Works</h3>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-gradient-to-r from-cyan-400 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold text-xl">1</div>
+                        <h4 class="font-semibold mb-2">Copy Link</h4>
+                        <p class="text-gray-600 text-sm">Copy the TikTok video URL from the app or website</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-gradient-to-r from-cyan-400 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold text-xl">2</div>
+                        <h4 class="font-semibold mb-2">Paste URL</h4>
+                        <p class="text-gray-600 text-sm">Paste the link in the input field above</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-gradient-to-r from-cyan-400 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold text-xl">3</div>
+                        <h4 class="font-semibold mb-2">Download</h4>
+                        <p class="text-gray-600 text-sm">Click download and get your video without watermark</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="mt-12 glass-effect rounded-3xl p-8">
+                <h3 class="text-2xl font-bold text-center mb-6">Frequently Asked Questions</h3>
+                <div class="space-y-4">
+                    <div class="p-4 bg-gray-50 rounded-xl">
+                        <h4 class="font-semibold mb-2"><i class="fas fa-question-circle text-pink-500 mr-2"></i>Is this service free?</h4>
+                        <p class="text-gray-600 text-sm">Yes! This service is completely free to use with no limits or restrictions.</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-xl">
+                        <h4 class="font-semibold mb-2"><i class="fas fa-question-circle text-pink-500 mr-2"></i>Do I need to create an account?</h4>
+                        <p class="text-gray-600 text-sm">No account or registration is required. Just paste the link and download!</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-xl">
+                        <h4 class="font-semibold mb-2"><i class="fas fa-question-circle text-pink-500 mr-2"></i>What video quality can I download?</h4>
+                        <p class="text-gray-600 text-sm">You can download videos in the highest quality available, including Full HD (1080p) when supported by the original video.</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-xl">
+                        <h4 class="font-semibold mb-2"><i class="fas fa-question-circle text-pink-500 mr-2"></i>Can I download videos with private accounts?</h4>
+                        <p class="text-gray-600 text-sm">No, only public videos can be downloaded. Private videos require authentication.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-8 px-4 text-center">
+        <p class="text-white/70">
+            <i class="fas fa-heart text-pink-400"></i>
+            Made with love for content creators
+        </p>
+        <p class="text-white/50 text-sm mt-2">
+            This tool is for personal use only. Please respect copyright and creators' rights.
+        </p>
+        <p class="text-white/40 text-xs mt-2">
+            Not affiliated with TikTok. All trademarks belong to their respective owners.
+        </p>
+    </footer>
+
+    <script>
+        // Video data storage
+        let currentVideoData = null;
+
+        // API endpoints to try
+        const apiEndpoints = [
+            // Primary API - Mediadl
+            {
+                name: 'Mediadl',
+                url: (tiktokUrl) => `https://mediadl.app/api/download?url=${encodeURIComponent(tiktokUrl)}`
+            },
+            // Secondary API - TikWM
+            {
+                name: 'TikWM',
+                url: (tiktokUrl) => `https://www.tikwm.com/api/?url=${encodeURIComponent(tiktokUrl)}`
+            },
+            // Tertiary API - TikTok Downloader
+            {
+                name: 'TikDownloader',
+                url: (tiktokUrl) => `https://tdownv4.sl-bjs.workers.dev/?down=${encodeURIComponent(tiktokUrl)}`
+            }
+        ];
+
+        // Format numbers
+        function formatNumber(num) {
+            if (!num) return '0';
+            num = parseInt(num) || 0;
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+
+        // Format duration
+        function formatDuration(seconds) {
+            if (!seconds) return '0:00';
+            seconds = parseInt(seconds) || 0;
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Set example URL
+        function setExampleUrl(url) {
+            document.getElementById('tiktokUrl').value = url;
+        }
+
+        // Fetch video from API with fallback
+        async function fetchVideo() {
+            const urlInput = document.getElementById('tiktokUrl').value.trim();
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const resultCard = document.getElementById('resultCard');
+            const fetchBtn = document.getElementById('fetchBtn');
+
+            // Validate URL
+            if (!urlInput) {
+                showError('Please enter a TikTok video URL');
+                return;
+            }
+
+            if (!urlInput.includes('tiktok.com')) {
+                showError('Please enter a valid TikTok URL');
+                return;
+            }
+
+            // Show loading
+            loading.classList.remove('hidden');
+            error.classList.add('hidden');
+            resultCard.classList.add('hidden');
+            fetchBtn.disabled = true;
+            fetchBtn.classList.add('opacity-50');
+
+            currentVideoData = null;
+
+            // Try each API endpoint
+            for (const endpoint of apiEndpoints) {
+                try {
+                    console.log(`Trying API: ${endpoint.name}`);
+                    const response = await fetch(endpoint.url(urlInput), {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    
+                    // Parse different API response formats
+                    const parsedData = parseApiResponse(data, endpoint.name);
+                    
+                    if (parsedData && parsedData.videoUrl) {
+                        loading.classList.add('hidden');
+                        fetchBtn.disabled = false;
+                        fetchBtn.classList.remove('opacity-50');
+                        currentVideoData = parsedData;
+                        displayVideo(parsedData);
+                        return;
+                    }
+                } catch (err) {
+                    console.warn(`${endpoint.name} failed:`, err.message);
+                    continue;
+                }
+            }
+
+            // All APIs failed
+            loading.classList.add('hidden');
+            fetchBtn.disabled = false;
+            fetchBtn.classList.remove('opacity-50');
+            showError('All download services are currently unavailable. Please try again in a few minutes or check if the video URL is correct and the video is public.');
+        }
+
+        // Parse different API response formats
+        function parseApiResponse(data, apiName) {
+            try {
+                if (apiName === 'Mediadl') {
+                    if (data.status === 'success' && data.data) {
+                        return {
+                            videoUrl: data.data.video?.nowatermark || data.data.video?.watermark,
+                            videoUrlWithWatermark: data.data.video?.watermark,
+                            videoUrlNoWatermark: data.data.video?.nowatermark,
+                            audioUrl: data.data.video?.music,
+                            title: data.data.title || data.data.desc,
+                            author: {
+                                nickname: data.data.author?.nickname,
+                                username: data.data.author?.uniqueId,
+                                avatar: data.data.author?.avatar
+                            },
+                            cover: data.data.cover || data.data.video?.cover,
+                            duration: data.data.duration,
+                            statistics: {
+                                viewCount: data.data.statistics?.playCount,
+                                likeCount: data.data.statistics?.diggCount,
+                                shareCount: data.data.statistics?.shareCount
+                            }
+                        };
+                    }
+                } else if (apiName === 'TikWM') {
+                    if (data.code === 0 && data.data) {
+                        return {
+                            videoUrl: data.data.play,
+                            videoUrlWithWatermark: data.data.play,
+                            videoUrlNoWatermark: data.data.play,
+                            audioUrl: data.data.music,
+                            title: data.data.title,
+                            author: {
+                                nickname: data.data.author.nickname,
+                                username: data.data.author.unique_id,
+                                avatar: data.data.author.avatar
+                            },
+                            cover: data.data.cover,
+                            duration: data.data.duration,
+                            statistics: {
+                                viewCount: data.data.stats?.play_count,
+                                likeCount: data.data.stats?.digg_count,
+                                shareCount: data.data.stats?.share_count
+                            }
+                        };
+                    }
+                } else if (apiName === 'TikDownloader') {
+                    if (data.download_url || data.video) {
+                        return {
+                            videoUrl: data.download_url || data.video,
+                            videoUrlWithWatermark: data.download_url || data.video,
+                            videoUrlNoWatermark: data.download_url || data.video,
+                            audioUrl: data.music || data.audio_url,
+                            title: data.title || data.desc,
+                            author: {
+                                nickname: data.author?.nickname || data.nickname,
+                                username: data.author?.username || data.username,
+                                avatar: data.author?.avatar || data.avatar
+                            },
+                            cover: data.cover || data.video_cover,
+                            duration: data.duration,
+                            statistics: {
+                                viewCount: data.view_count || data.statistics?.viewCount,
+                                likeCount: data.like_count || data.statistics?.likeCount,
+                                shareCount: data.share_count || data.statistics?.shareCount
+                            }
+                        };
+                    }
+                }
+                return null;
+            } catch (err) {
+                console.error('Error parsing API response:', err);
+                return null;
+            }
+        }
+
+        // Display video information
+        function displayVideo(data) {
+            const resultCard = document.getElementById('resultCard');
+            
+            const author = data.author || {};
+            const stats = data.statistics || {};
+            
+            document.getElementById('videoThumb').src = data.cover || 'https://via.placeholder.com/400x700/000000/FFFFFF?text=TikTok+Video';
+            document.getElementById('authorAvatar').src = author.avatar || 'https://via.placeholder.com/100?text=User';
+            document.getElementById('authorName').textContent = author.nickname || 'Unknown Creator';
+            document.getElementById('authorUsername').textContent = '@' + (author.username || 'unknown');
+            document.getElementById('videoTitle').textContent = data.title || 'No description available';
+            document.getElementById('videoDuration').textContent = formatDuration(data.duration);
+            document.getElementById('viewCount').textContent = formatNumber(stats.viewCount);
+            document.getElementById('likeCount').textContent = formatNumber(stats.likeCount);
+            document.getElementById('shareCount').textContent = formatNumber(stats.shareCount);
+            
+            // Show result card
+            resultCard.classList.remove('hidden');
+            
+            // Scroll to result
+            resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Show error
+        function showError(message) {
+            const error = document.getElementById('error');
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            error.classList.remove('hidden');
+        }
+
+        // Download video
+        function downloadVideo(type) {
+            if (!currentVideoData) return;
+            
+            let url;
+            if (type === 'nowatermark') {
+                url = currentVideoData.videoUrlNoWatermark || currentVideoData.videoUrl;
+            } else {
+                url = currentVideoData.videoUrlWithWatermark || currentVideoData.videoUrl;
+            }
+            
+            if (url) {
+                window.open(url, '_blank');
+            } else {
+                alert('Download URL not available. Please try again.');
+            }
+        }
+
+        // Download audio
+        function downloadAudio() {
+            if (!currentVideoData) return;
+            
+            const audioUrl = currentVideoData.audioUrl;
+            if (audioUrl) {
+                window.open(audioUrl, '_blank');
+            } else {
+                alert('Audio download not available for this video');
+            }
+        }
+
+        // Download source code
+        function downloadSourceCode() {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'tiktok-downloader.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('tiktokUrl').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                fetchVideo();
+            }
+        });
+
+        // Auto-detect URL from clipboard on page load
+        async function checkClipboard() {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (text.includes('tiktok.com')) {
+                    document.getElementById('tiktokUrl').value = text;
+                }
+            } catch (err) {
+                // Clipboard access not available
+            }
+        }
+
+        // Check clipboard after a short delay
+        setTimeout(checkClipboard, 1000);
+    </script>
+</body>
+</html>
